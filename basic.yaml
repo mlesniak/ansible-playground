@@ -1,0 +1,24 @@
+---
+- hosts: remote
+  vars:
+    name: michael
+  tasks:
+    - name: template example
+      template: src=data-file.j2 dest={{ ansible_env.HOME }}/data-file backup=yes
+
+    - name: copy file
+      copy: src=program.sh dest={{ ansible_env.HOME }}/program.sh mode=u+x
+
+    - name: killing old program
+      command: pkill program.sh
+      ignore_errors: yes
+
+    - name: cleaning up
+      file: path={{ ansible_env.HOME }}/program.log state=absent
+
+    # Does not work of course :)
+    - name: start program
+      command: program.sh chdir={{ ansible_env.HOME }}
+      # Runs only 45 seconds
+      async: 45
+      poll: 0
